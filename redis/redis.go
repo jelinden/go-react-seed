@@ -33,7 +33,7 @@ func (r *Redis) createRedis(db int64) *redis.Client {
 }
 
 func (r *Redis) Put(key string, value string) {
-	err := r.SessionClient.Set(key, value, 0).Err() //key,value,expiration in time.Hour
+	err := r.SessionClient.Set(key, value, 24*7*4).Err() //key,value,expiration in time.Hour
 	if err != nil {
 		fmt.Println("PUT ERROR", err)
 	}
