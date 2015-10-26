@@ -19,3 +19,11 @@ As a database we are using Redis for both sessions and users. Sessions are saved
 or
 
 ```bash start-app.sh```
+
+## TODO
+
+* Assets versioning
+* Member page is not informational to others than admin user, don't show it to others
+* Verification of new user with email
+* Forgot my password functionality
+* Running with Raspberry pi
