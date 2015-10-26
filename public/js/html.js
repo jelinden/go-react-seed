@@ -12,7 +12,6 @@ var Html = React.createClass({
                     <meta name="description" content="" />
                     <meta name="viewport" content="width=device-width, initial-scale=1" />
                     <link rel="stylesheet" href="/public/css/pure-min.css" />
-                    <link rel="stylesheet" href="http://yui.yahooapis.com/pure/0.6.0/grids-responsive-min.css"/>
                     <link rel="stylesheet" href="/public/css/index.css" />
                 </head>
                 <body>
