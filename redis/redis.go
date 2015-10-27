@@ -3,6 +3,7 @@ package redis
 import (
 	"encoding/json"
 	"fmt"
+	"time"
 
 	"github.com/jelinden/go-react-seed/domain"
 
@@ -33,7 +34,7 @@ func (r *Redis) createRedis(db int64) *redis.Client {
 }
 
 func (r *Redis) Put(key string, value string) {
-	err := r.SessionClient.Set(key, value, 24*7*4*1000*60*60).Err() //key,value,expiration in time.Hour
+	err := r.SessionClient.Set(key, value, time.Duration(24*7*4)*time.Hour).Err() //key,value,expiration in time.Hour
 	if err != nil {
 		fmt.Println("PUT ERROR", err)
 	}
