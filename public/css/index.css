@@ -18,40 +18,16 @@ h1 {
 h2 {
   font-size: 1.5em;
 }
-
-.navigation {
-    width: 200px;
-    text-transform: uppercase;
-    float: right;
-}
-
-.navigation ul {
-    background-color: #37383a;
-    cursor: pointer;
-    list-style: none;
-    padding: 0;
-    margin: 0;
-    width: 100%;
-}
-
-.navigation .header {
-    padding: 15px;
-    background-color: #4e5053;
-}
-
-.navigation li {
-    padding: 15px;
-}
-
-.navigation .selected {
-    background-color: #9061b2;
-}
-
+.pure-menu-link:hover,.pure-menu-link:focus{background-color:#777}
 a {
     text-decoration: none;
     color: #fff;
     display: inline-block;
     padding-left: 10px;
+}
+
+.pure-menu-link {
+    color: #fff;
 }
 
 .pubDate {
