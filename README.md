@@ -22,7 +22,9 @@ http://vvv.tobiassjosten.net/linux/installing-redis-on-ubuntu-with-apt/
 ## Running
 
 ```cd $GOPATH```
+
 ```go get github.com/jelinden/go-react-seed```
+
 ```cd src/github.com/jelinden/go-react-seed```
 
 and
