@@ -27,9 +27,11 @@ http://vvv.tobiassjosten.net/linux/installing-redis-on-ubuntu-with-apt/
 
 ```cd src/github.com/jelinden/go-react-seed```
 
+```npm install```
+
 and
 
-```npm install && npm run build && go build && ./go-react-seed```
+```npm run build && go build && ./go-react-seed```
 
 or
 
