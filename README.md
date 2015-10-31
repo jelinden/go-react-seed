@@ -12,9 +12,26 @@ As a server we are using echo (https://github.com/labstack/echo), which is super
 
 As a database we are using Redis for both sessions and users. Sessions are saved for 4 weeks while users are saved with no expiration.
 
+On mac, run
+```brew install redis```
+
+on Debian
+
+http://vvv.tobiassjosten.net/linux/installing-redis-on-ubuntu-with-apt/
+
 ## Running
 
-```npm install && npm run build && go build && ./go-react-seed```
+```cd $GOPATH```
+
+```go get github.com/jelinden/go-react-seed```
+
+```cd src/github.com/jelinden/go-react-seed```
+
+```npm install```
+
+and
+
+```npm run build && go build && ./go-react-seed```
 
 or
 
