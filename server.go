@@ -211,6 +211,6 @@ func main() {
 	e.Get("/logout", app.logout)
 	e.Get("/login", selfjs.New(runtime.NumCPU(), string(bundle), string(user)))
 	e.Post("/login", app.login)
-	fmt.Println("Starting server at port 3000")
-	e.Run(":3000")
+	fmt.Println("Starting server at port 3300")
+	e.Run(":3300")
 }
