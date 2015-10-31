@@ -56,7 +56,7 @@ var Layout = React.createClass({
                     <div className="pure-u-1 pure-u-md-1-3">
                         <div className="pure-menu">
                             <Link to="/" className="pure-menu-heading pure-menu-link">Home</Link>
-                            <a href="#" className="custom-toggle" id="toggle"><s className="bar"></s><s className="bar"></s></a>
+                            <a href="#" className="custom-toggle" id="toggle"><s className="bar"></s><s className="bar"></s><s className="bar"></s></a>
                         </div>
                     </div>
                     <div className="pure-u-1 pure-u-md-1-3">
