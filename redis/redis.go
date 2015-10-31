@@ -40,7 +40,7 @@ func (r *Redis) Put(key string, value string) {
 	}
 }
 
-func (r *Redis) AddOrUpdateUser(key string, value string) error {
+func (r *Redis) AddNewUser(key string, value string) error {
 	exists, err := r.UserInfoClient.Exists(key).Result()
 	if err != nil {
 		fmt.Println("ERROR", err)
@@ -54,6 +54,15 @@ func (r *Redis) AddOrUpdateUser(key string, value string) error {
 		}
 	} else {
 		fmt.Println("Email already exists")
+	}
+	return nil
+}
+
+func (r *Redis) UpdateUser(key string, value string) error {
+	err := r.UserInfoClient.Set(key, value, 0).Err() //key,value,expiration in time.Hour
+	if err != nil {
+		fmt.Println("PUT ERROR", err)
+		return err
 	}
 	return nil
 }

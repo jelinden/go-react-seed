@@ -69,7 +69,7 @@ func (a *Application) createUser(c *echo.Context) error {
 	if err != nil {
 		fmt.Println(err)
 	} else {
-		err := a.Redis.AddOrUpdateUser(user.Id, string(userJSON))
+		err := a.Redis.AddNewUser(user.Id, string(userJSON))
 		if err == nil {
 			email.SendVerificationEmail(user.Email,
 				hashedId+"/"+user.EmailVerificationString,
@@ -128,6 +128,8 @@ func (a *Application) userAPI(c *echo.Context) error {
 
 func (a *Application) verifyEmail(c *echo.Context) error {
 	user := a.Redis.GetUser(c.P(0))
+	fmt.Println(c.P(0))
+	fmt.Println(user)
 	if user.EmailVerificationString == c.P(1) {
 		user.EmailVerified = true
 		user.EmailVerifiedDate = time.Now().UTC()
@@ -136,7 +138,7 @@ func (a *Application) verifyEmail(c *echo.Context) error {
 		if err != nil {
 			fmt.Println(err)
 		} else {
-			a.Redis.AddOrUpdateUser(user.Id, string(userJSON))
+			a.Redis.UpdateUser(user.Id, string(userJSON))
 		}
 		return c.Redirect(302, "/login?verified=true")
 	}
