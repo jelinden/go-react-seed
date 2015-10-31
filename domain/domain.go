@@ -1,6 +1,9 @@
 package domain
 
-import "time"
+import (
+	"fmt"
+	"time"
+)
 
 const Admin = "admin"
 const Normal = "normal"
@@ -11,6 +14,7 @@ type Data struct {
 }
 type User struct {
 	Id                      string
+	Email                   string
 	Username                string
 	Password                string
 	Role                    Role
@@ -23,4 +27,13 @@ type User struct {
 
 type Role struct {
 	Name string
+}
+
+type CustomError struct {
+	Type    string
+	Message string
+}
+
+func (e CustomError) Error() string {
+	return fmt.Sprintf("%v: %v", e.Type, e.Message)
 }

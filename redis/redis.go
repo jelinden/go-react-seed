@@ -40,11 +40,11 @@ func (r *Redis) Put(key string, value string) {
 	}
 }
 
-func (r *Redis) AddUser(key string, value string) error {
+func (r *Redis) AddOrUpdateUser(key string, value string) error {
 	exists, err := r.UserInfoClient.Exists(key).Result()
 	if err != nil {
 		fmt.Println("ERROR", err)
-		return err
+		return &domain.CustomError{Type: "EmailExists", Message: err.Error()}
 	}
 	if exists == false {
 		err := r.UserInfoClient.Set(key, value, 0).Err() //key,value,expiration in time.Hour

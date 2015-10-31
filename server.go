@@ -1,18 +1,16 @@
 package main
 
 import (
-	"crypto/sha512"
 	"encoding/json"
 	"fmt"
 	"io/ioutil"
+	"log"
 	"net/http"
+	"os"
 	"runtime"
 	"time"
 
-	"encoding/base64"
-
-	"golang.org/x/crypto/pbkdf2"
-
+	"github.com/jelinden/go-react-seed/app/email"
 	"github.com/jelinden/go-react-seed/domain"
 	"github.com/jelinden/go-react-seed/middleware"
 	r "github.com/jelinden/go-react-seed/redis"
@@ -22,6 +20,8 @@ import (
 	"github.com/rs/cors"
 	"github.com/thoas/stats"
 )
+
+var fromEmail, emailSendingPasswd string
 
 func NewApplication() *Application {
 	return &Application{}
@@ -46,34 +46,46 @@ func (a *Application) Init() {
 }
 
 func (a *Application) createUser(c *echo.Context) error {
+	// TODO validate email
+	userEmail := c.Form("Id")
 	role := domain.Role{Name: domain.Normal}
+
 	if a.Redis.DbSize() == 0 {
 		role = domain.Role{Name: domain.Admin}
 	}
+
+	hashedId := domain.ShaHashString(userEmail)
 	user := &domain.User{
-		Id:                      c.Form("Id"),
+		Id:                      hashedId,
+		Email:                   userEmail,
 		Username:                c.Form("Username"),
-		Password:                a.HashPassword([]byte(c.Form("Password")), []byte(c.Form("Id"))),
+		Password:                domain.HashPassword([]byte(c.Form("Password")), []byte(userEmail)),
 		CreateDate:              time.Now().UTC(),
 		EmailVerified:           false,
-		EmailVerificationString: a.HashPassword([]byte(c.Form("Id")), []byte(time.Now().String())),
+		EmailVerificationString: domain.HashPassword([]byte(userEmail), []byte(time.Now().String())),
 		Role: role,
 	}
 	userJSON, err := json.Marshal(user)
 	if err != nil {
 		fmt.Println(err)
 	} else {
-		a.Redis.AddUser(user.Id, string(userJSON))
-		return c.Redirect(302, "/")
+		err := a.Redis.AddOrUpdateUser(user.Id, string(userJSON))
+		if err == nil {
+			email.SendVerificationEmail(user.Email,
+				hashedId+"/"+user.EmailVerificationString,
+				fromEmail,
+				emailSendingPasswd)
+			return c.Redirect(302, "/")
+		}
 	}
-	return c.Redirect(302, "/redirect?status=failed")
+	return c.Redirect(302, "/?status=failed")
 }
 
 func (a *Application) login(c *echo.Context) error {
 	id := c.Form("Id")
-	user := a.Redis.GetUser(id)
-	password := a.HashPassword([]byte(c.Form("Password")), []byte(id))
-	sessionKey := a.HashPassword([]byte(id), []byte(user.CreateDate.String()))
+	user := a.Redis.GetUser(domain.ShaHashString(id))
+	password := domain.HashPassword([]byte(c.Form("Password")), []byte(id))
+	sessionKey := domain.HashPassword([]byte(id), []byte(user.CreateDate.String()))
 	if user.Password == password {
 		http.SetCookie(c.Response(), &http.Cookie{Name: "login", Value: sessionKey, MaxAge: 2592000})
 	}
@@ -87,6 +99,7 @@ func (a *Application) getUsersData() domain.Data {
 	data.Users = a.Redis.ListUsers()
 	return data
 }
+
 func (a *Application) listUsers() domain.Data {
 	return a.getUsersData()
 }
@@ -110,7 +123,24 @@ func (a *Application) listUsersAPI(c *echo.Context) error {
 }
 
 func (a *Application) userAPI(c *echo.Context) error {
-	return c.JSON(http.StatusOK, a.Redis.GetUser(c.P(0)))
+	return c.JSON(http.StatusOK, a.Redis.GetUser(domain.ShaHashString(c.P(0))))
+}
+
+func (a *Application) verifyEmail(c *echo.Context) error {
+	user := a.Redis.GetUser(c.P(0))
+	if user.EmailVerificationString == c.P(1) {
+		user.EmailVerified = true
+		user.EmailVerifiedDate = time.Now().UTC()
+		user.ModifyDate = time.Now().UTC()
+		userJSON, err := json.Marshal(user)
+		if err != nil {
+			fmt.Println(err)
+		} else {
+			a.Redis.AddOrUpdateUser(user.Id, string(userJSON))
+		}
+		return c.Redirect(302, "/login?verified=true")
+	}
+	return c.Redirect(302, "/login?verified=false")
 }
 
 func (a *Application) logout(c *echo.Context) error {
@@ -130,6 +160,11 @@ func (a *Application) errorHandler(err error, c *echo.Context) {
 }
 
 func main() {
+	fromEmail = os.Getenv("FROMEMAIL")
+	emailSendingPasswd = os.Getenv("EMAILSENDINGPASSWD")
+	if fromEmail == "" || emailSendingPasswd == "" {
+		log.Fatal("FROMEMAIL or EMAILSENDINGPASSWD was not set")
+	}
 	runtime.GOMAXPROCS(runtime.NumCPU())
 	app := NewApplication()
 	app.Init()
@@ -171,14 +206,11 @@ func main() {
 
 	e.Get("/api/users", app.listUsersAPI)
 	e.Get("/api/user/:id", app.userAPI)
+	e.Get("/verify/:id/:hash", app.verifyEmail)
 	e.Post("/register", app.createUser)
 	e.Get("/logout", app.logout)
 	e.Get("/login", selfjs.New(runtime.NumCPU(), string(bundle), string(user)))
 	e.Post("/login", app.login)
 	fmt.Println("Starting server at port 3000")
 	e.Run(":3000")
-}
-
-func (a *Application) HashPassword(password, salt []byte) string {
-	return base64.URLEncoding.EncodeToString(pbkdf2.Key(password, salt, 4096, sha512.Size, sha512.New))
 }
