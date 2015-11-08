@@ -1,7 +1,8 @@
 var React = require('react');
-var Router = require('react-router');
-var RouteHandler = Router.RouteHandler;
-var Link = Router.Link;
+var ReactDOM = require('react-dom');
+var ReactRouter = require('react-router');
+var Router = ReactRouter.Router;
+var Link = ReactRouter.Link;
 
 var Layout = React.createClass({
     statics: {
@@ -79,7 +80,7 @@ var Layout = React.createClass({
 
                 <div className="main">
                     <h1>go react template</h1>
-                    <RouteHandler data={this.props.data} />
+                    {this.props.children}
                 </div>
             </div>
         );

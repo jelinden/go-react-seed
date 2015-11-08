@@ -1,21 +1,31 @@
 var React = require('react');
+var ReactDOM = require('react-dom');
 var moment = require('moment');
 var Login = Login;
+var DataWrapper = DataWrapper;
 
 var Members = React.createClass({
+    contextTypes: {
+        data: React.PropTypes.any
+    },
+
     componentDidMount: function() {
         Layout.closeMenu();
     },
 
     render() {
-        if (typeof window !== 'undefined') {
-            console.log("Members page render");
-        }
-        var userList;
-        if (this.props.data.Err !== "") {
-            userList = <div>{this.props.data.Err}</div>;
+        var userList, data;
+        if (this.context.data !== undefined) {
+            data = this.context.data;
         } else {
-            userList = <table className="pure-table"><UserList data={this.props.data}/></table>;
+            data = this.props.data;
+        }
+        if (data !== undefined) {
+            if (data.Err !== "") {
+                userList = <div>{data.Err}</div>;
+            } else {
+                userList = <UserList data={data}/>;
+            }
         }
         return (
             <div>
@@ -29,20 +39,20 @@ var Members = React.createClass({
 var UserList = React.createClass({
     render: function () {
         return (
-            <div>
-                {
-                    this.props.data.Users.map(function (item, i) { 
-                        return ( 
-                            <tr>
-                                <td>{item.Id}</td>
-                                <td>{item.Username}</td>
-                                <td>{item.Role.Name}</td>
-                                <td><DateFormat data={item.CreateDate}/></td>
-                            </tr>
-                        ); 
-                    })
-                }
-            </div>
+            <table className="pure-table"><tbody>
+            { this.props.data.Users.map(function (item, i) { 
+                return ( 
+                    <tr key={i}>
+                        <td>{item.Id}</td>
+                        <td>{item.Username}</td>
+                        <td>{item.Email}</td>
+                        <td>{item.Role.Name}</td>
+                        <td>{item.EmailVerified}</td>
+                        <td><DateFormat data={item.CreateDate}/></td>
+                    </tr>
+                ); 
+            })}
+            </tbody></table>
         );
     }
 });

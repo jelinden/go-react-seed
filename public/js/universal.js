@@ -1,6 +1,8 @@
 var React = require('react');
-var Route = Router.Route;
-var DefaultRoute = Router.DefaultRoute;
+var ReactRouter = require('react-router');
+var Router = ReactRouter.Router;
+var Route = ReactRouter.Route;
+var IndexRoute = ReactRouter.IndexRoute;
 
 var Register = Register;
 var Members = Members;
@@ -9,11 +11,11 @@ var Index = Index;
 var Layout = Layout;
 
 var routes = (
-    <Route handler={Layout} path="/">
-        <DefaultRoute handler={Index}/>
-        <Route path="/register" handler={Register}/>
-        <Route path="/members" handler={Members}/>
-        <Route path="/login" handler={Login}/>
+    <Route component={Layout} path="/">
+        <IndexRoute component={Index}/>
+        <Route path="/register" component={Register}/>
+        <Route path="/members" component={Members}/>
+        <Route path="/login" component={Login}/>
     </Route>
 );
 

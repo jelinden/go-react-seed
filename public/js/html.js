@@ -1,4 +1,5 @@
 var React = require('react');
+var ReactDOM = require('react-dom');
 
 var Html = React.createClass({
     render: function() {
@@ -15,7 +16,11 @@ var Html = React.createClass({
                     <link rel="stylesheet" href="/public/css/index.css" />
                 </head>
                 <body>
-                    {this.props.markup}
+                    <div id="react-container">
+                        {React.cloneElement(this.props.children, {
+                            data: this.props.data
+                        })}
+                    </div>
                     <script src="/universal.js" async></script>
                 </body>
              </html>

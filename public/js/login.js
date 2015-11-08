@@ -1,4 +1,5 @@
 var React = require('react');
+var ReactDOM = require('react-dom');
 var Login = Login;
 
 var Login = React.createClass({
@@ -13,10 +14,10 @@ var Login = React.createClass({
                     <fieldset>
                         <legend>Login</legend>
 
-                        <label for="Id">Email</label>
+                        <label htmlFor="Id">Email</label>
                         <input id="Id" name="Id" type="email" placeholder="Email"/>
 
-                        <label for="Password">Password</label>
+                        <label htmlFor="Password">Password</label>
                         <input id="Password" name="Password" type="password" placeholder="Password"/>
 
                         <button type="submit" className="pure-button pure-button-primary">Login</button>
