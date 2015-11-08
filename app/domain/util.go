@@ -5,6 +5,7 @@ import (
 	"crypto/sha512"
 	"encoding/base64"
 	"encoding/hex"
+	"regexp"
 
 	"golang.org/x/crypto/pbkdf2"
 )
@@ -17,4 +18,9 @@ func ShaHashString(hashable string) string {
 	h := sha1.New()
 	h.Write([]byte(hashable))
 	return hex.EncodeToString(h.Sum(nil))
+}
+
+func ValidateEmail(email string) bool {
+	re := regexp.MustCompile(".+@.+\\..+")
+	return re.Match([]byte(email))
 }

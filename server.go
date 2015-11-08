@@ -10,10 +10,10 @@ import (
 	"runtime"
 	"time"
 
+	"github.com/jelinden/go-react-seed/app/domain"
 	"github.com/jelinden/go-react-seed/app/email"
-	"github.com/jelinden/go-react-seed/domain"
-	"github.com/jelinden/go-react-seed/middleware"
-	r "github.com/jelinden/go-react-seed/redis"
+	"github.com/jelinden/go-react-seed/app/middleware"
+	r "github.com/jelinden/go-react-seed/app/redis"
 	"github.com/jelinden/selfjs"
 	"github.com/labstack/echo"
 	mw "github.com/labstack/echo/middleware"
@@ -46,37 +46,41 @@ func (a *Application) Init() {
 }
 
 func (a *Application) createUser(c *echo.Context) error {
-	// TODO validate email
 	userEmail := c.Form("Id")
-	role := domain.Role{Name: domain.Normal}
+	valid := domain.ValidateEmail(userEmail)
+	if valid {
+		role := domain.Role{Name: domain.Normal}
 
-	if a.Redis.DbSize() == 0 {
-		role = domain.Role{Name: domain.Admin}
-	}
-
-	hashedId := domain.ShaHashString(userEmail)
-	user := &domain.User{
-		Id:                      hashedId,
-		Email:                   userEmail,
-		Username:                c.Form("Username"),
-		Password:                domain.HashPassword([]byte(c.Form("Password")), []byte(userEmail)),
-		CreateDate:              time.Now().UTC(),
-		EmailVerified:           false,
-		EmailVerificationString: domain.HashPassword([]byte(userEmail), []byte(time.Now().String())),
-		Role: role,
-	}
-	userJSON, err := json.Marshal(user)
-	if err != nil {
-		fmt.Println(err)
-	} else {
-		err := a.Redis.AddNewUser(user.Id, string(userJSON))
-		if err == nil {
-			email.SendVerificationEmail(user.Email,
-				hashedId+"/"+user.EmailVerificationString,
-				fromEmail,
-				emailSendingPasswd)
-			return c.Redirect(302, "/")
+		if a.Redis.DbSize() == 0 {
+			role = domain.Role{Name: domain.Admin}
 		}
+
+		hashedId := domain.ShaHashString(userEmail)
+		user := &domain.User{
+			Id:                      hashedId,
+			Email:                   userEmail,
+			Username:                c.Form("Username"),
+			Password:                domain.HashPassword([]byte(c.Form("Password")), []byte(userEmail)),
+			CreateDate:              time.Now().UTC(),
+			EmailVerified:           false,
+			EmailVerificationString: domain.HashPassword([]byte(userEmail), []byte(time.Now().String())),
+			Role: role,
+		}
+		userJSON, err := json.Marshal(user)
+		if err != nil {
+			fmt.Println(err)
+		} else {
+			err := a.Redis.AddNewUser(user.Id, string(userJSON))
+			if err == nil {
+				email.SendVerificationEmail(user.Email,
+					hashedId+"/"+user.EmailVerificationString,
+					fromEmail,
+					emailSendingPasswd)
+				return c.Redirect(302, "/")
+			}
+		}
+	} else {
+		return c.Redirect(302, "/register?email=err")
 	}
 	return c.Redirect(302, "/?status=failed")
 }
@@ -88,10 +92,18 @@ func (a *Application) login(c *echo.Context) error {
 	sessionKey := domain.HashPassword([]byte(id), []byte(user.CreateDate.String()))
 	if user.Password == password {
 		http.SetCookie(c.Response(), &http.Cookie{Name: "login", Value: sessionKey, MaxAge: 2592000})
+		userAsJson, err := json.Marshal(user)
+		if err != nil {
+			fmt.Println(err)
+		} else {
+			a.Redis.Put(sessionKey, string(userAsJson))
+			return c.Redirect(302, "/")
+		}
+	} else {
+		fmt.Println("not a match")
 	}
-	userAsJson, _ := json.Marshal(user)
-	a.Redis.Put(sessionKey, string(userAsJson))
-	return c.Redirect(302, "/")
+
+	return c.Redirect(302, "/login?failed=true")
 }
 
 func (a *Application) getUsersData() domain.Data {
@@ -199,8 +211,10 @@ func main() {
 
 	bundle, _ := ioutil.ReadFile("./build/bundle.js")
 	user, _ := json.Marshal(domain.User{})
+
 	e.Get("/", selfjs.New(runtime.NumCPU(), string(bundle), string(user)))
 	e.Get("/register", selfjs.New(runtime.NumCPU(), string(bundle), string(user)))
+	e.Get("/login", selfjs.New(runtime.NumCPU(), string(bundle), string(user)))
 
 	admin := e.Group("/members")
 	admin.Use(middleware.CheckAdmin(app.Redis, string(bundle)))
@@ -211,7 +225,6 @@ func main() {
 	e.Get("/verify/:id/:hash", app.verifyEmail)
 	e.Post("/register", app.createUser)
 	e.Get("/logout", app.logout)
-	e.Get("/login", selfjs.New(runtime.NumCPU(), string(bundle), string(user)))
 	e.Post("/login", app.login)
 	fmt.Println("Starting server at port 3300")
 	e.Run(":3300")

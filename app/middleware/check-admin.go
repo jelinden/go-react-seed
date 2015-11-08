@@ -5,8 +5,8 @@ import (
 	"fmt"
 	"runtime"
 
-	"github.com/jelinden/go-react-seed/domain"
-	"github.com/jelinden/go-react-seed/redis"
+	"github.com/jelinden/go-react-seed/app/domain"
+	"github.com/jelinden/go-react-seed/app/redis"
 	"github.com/jelinden/selfjs"
 	"github.com/labstack/echo"
 )

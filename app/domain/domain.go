@@ -10,6 +10,7 @@ const Normal = "normal"
 
 type Data struct {
 	Users []User
+	User  User
 	Err   string
 }
 type User struct {

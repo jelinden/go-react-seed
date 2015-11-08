@@ -5,7 +5,7 @@ import (
 	"fmt"
 	"time"
 
-	"github.com/jelinden/go-react-seed/domain"
+	"github.com/jelinden/go-react-seed/app/domain"
 
 	"gopkg.in/redis.v3"
 )
