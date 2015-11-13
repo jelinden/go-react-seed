@@ -2,7 +2,7 @@
 
 A seed project for making isomorphic or universal Reactjs applications with a Golang backend.
 
-Rendering on the Golang side is made with V8. See https://github.com/jelinden/selfjs and https://github.com/ry/v8worker.
+Rendering on the Golang side is made with V8. See https://github.com/jelinden/selfjs (thank you https://github.com/nmerouze/selfjs) and https://github.com/ry/v8worker.
 
 ## Echo as a server
 
@@ -41,6 +41,7 @@ or
 
 * Assets versioning
 * Member page is not informational to others than admin user, don't show it to others
-* Verification of new user with email
 * Forgot my password functionality
 * Running with Raspberry pi
+* -Verification of new user with email-
+* -Update to React 0.14-
