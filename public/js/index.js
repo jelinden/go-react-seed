@@ -8,9 +8,6 @@ var Index = React.createClass({
     },
 
     render() {
-        if (typeof window !== 'undefined') {
-            console.log("index page render");
-        }
         return (
             <div>
                 <h2>Home page</h2>

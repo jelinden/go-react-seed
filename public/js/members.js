@@ -5,28 +5,52 @@ var Login = Login;
 var DataWrapper = DataWrapper;
 
 var Members = React.createClass({
+
     contextTypes: {
         data: React.PropTypes.any
     },
 
-    componentDidMount: function() {
-        Layout.closeMenu();
+    getInitialState: function() {
+        if (this.props.data !== 'undefined' && this.props.data !== null) {
+            return { data: this.props.data };
+        }
     },
 
-    render() {
-        var userList, data;
-        if (this.context.data !== undefined) {
-            data = this.context.data;
-        } else {
-            data = this.props.data;
-        }
-        if (data !== undefined) {
-            if (data.Err !== "") {
-                userList = <div>{data.Err}</div>;
+    onChange: function(state) {
+        this.setState(state);
+    },
+
+    loadServerData: function() {
+        var xmlhttp = new XMLHttpRequest();
+        xmlhttp.open("GET", "/api/users", true);
+        xmlhttp.onreadystatechange = function() {
+            if (xmlhttp.readyState == 4 && (xmlhttp.status == 200 || xmlhttp.status == 403)) {
+                var data = xmlhttp.responseText;
+                this.onChange({data: JSON.parse(data)});
+            }
+        }.bind(this);
+        xmlhttp.send();
+    },
+
+    componentDidMount: function() {
+        Layout.closeMenu();
+        this.intervalID = setInterval(this.loadServerData());
+    },
+
+    componentWillUnmount: function() {
+        clearInterval(this.intervalID)
+    },
+
+    render: function() {
+        var userList;
+        if (this.state.data !== undefined && this.state.data !== null) {
+            if (this.state.data.Err !== "") {
+                userList = <div>{this.state.data.Err}</div>;
             } else {
-                userList = <UserList data={data}/>;
+                userList = <UserList data={this.state.data}/>;
             }
         }
+
         return (
             <div>
                 <h2>Members</h2>
@@ -66,6 +90,4 @@ var DateFormat = React.createClass({
     }
 });
 
-module.exports = {
-    Members: Members
-};
+export default Members;

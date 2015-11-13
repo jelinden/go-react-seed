@@ -8,8 +8,9 @@ var Html = Html;
 var Index = Index;
 var routes = routes;
 var DataWrapper = DataWrapper;
-var createHistory = require('history/lib/createBrowserHistory');
+var createBrowserHistory = require('history/lib/createBrowserHistory');
 var createLocation = require('history/lib/createLocation');
+var DOM = React.DOM, body = DOM.body, div = DOM.div;
 
 if (typeof selfjs !== 'undefined') {
     selfjs.handleRequest = function(req, res, data) {
@@ -21,9 +22,11 @@ if (typeof selfjs !== 'undefined') {
                 }
             }
 
+            var reactContainer = ReactDOMServer.renderToString(<RoutingContext {...routerProps}/>)
             res.write(ReactDOMServer.renderToStaticMarkup(
                 <Html>
-                    <RoutingContext {...routerProps}/>
+                    <div id='react-container' dangerouslySetInnerHTML={{__html: reactContainer}}>
+                    </div>
                 </Html>
             ));
         });
@@ -31,42 +34,9 @@ if (typeof selfjs !== 'undefined') {
 }
 
 if (typeof window !== 'undefined') {
-    var xmlhttp = new XMLHttpRequest();
-    const history = createHistory();
-    
     function render() {
-        getData(function(data) {
-            match({ routes, location: window.location.pathname }, (error, redirectLocation, renderProps) => {
-                const routerProps = {
-                   ...renderProps,
-                   createElement: (Component, props) => {
-                       return React.createElement(Component, {...props, data});
-                   }
-                }
-
-                ReactDOM.render(
-                    <DataWrapper data={data}>
-                        <Router {...{history, routerProps}}>
-                            {routes}
-                        </Router>
-                    </DataWrapper>, document.getElementById('react-container'));
-            });
-        }, "/api/users");
-    }
-
-    function renderFactory(data) {
-        ReactDOM.render(<Router history={createHistory()} data={data}><DataWrapper data={data}>{routes}</DataWrapper></Router>, document.body);
-    }
-
-    function getData(callback, apiEndpoint) {
-        xmlhttp.open("GET", apiEndpoint, true);
-        xmlhttp.onreadystatechange = function() {
-            if (xmlhttp.readyState == 4 && (xmlhttp.status == 200 || xmlhttp.status == 403)) {
-                var data = xmlhttp.responseText;
-                callback(JSON.parse(data));
-            }
-        }
-        xmlhttp.send();
+        let history = createBrowserHistory();
+        ReactDOM.render(<Router history={history}>{routes}</Router>, document.getElementById('react-container'));
     }
 
     window.onload = function() {

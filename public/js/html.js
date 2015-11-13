@@ -17,9 +17,7 @@ var Html = React.createClass({
                 </head>
                 <body>
                     <div id="react-container">
-                        {React.cloneElement(this.props.children, {
-                            data: this.props.data
-                        })}
+                        {this.props.children}
                     </div>
                     <script src="/universal.js" async></script>
                 </body>
