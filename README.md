@@ -43,5 +43,5 @@ or
 * Member page is not informational to others than admin user, don't show it to others
 * Forgot my password functionality
 * Running with Raspberry pi
-* -Verification of new user with email-
-* -Update to React 0.14-
+* ~Verification of new user with email~
+* ~Update to React 0.14~
