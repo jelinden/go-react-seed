@@ -10,7 +10,6 @@ var routes = routes;
 var DataWrapper = DataWrapper;
 var createBrowserHistory = require('history/lib/createBrowserHistory');
 var createLocation = require('history/lib/createLocation');
-var DOM = React.DOM, body = DOM.body, div = DOM.div;
 
 if (typeof selfjs !== 'undefined') {
     selfjs.handleRequest = function(req, res, data) {
