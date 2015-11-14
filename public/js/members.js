@@ -20,25 +20,8 @@ var Members = React.createClass({
         this.setState(state);
     },
 
-    loadServerData: function() {
-        var xmlhttp = new XMLHttpRequest();
-        xmlhttp.open("GET", "/api/users", true);
-        xmlhttp.onreadystatechange = function() {
-            if (xmlhttp.readyState == 4 && (xmlhttp.status == 200 || xmlhttp.status == 403)) {
-                var data = xmlhttp.responseText;
-                this.onChange({data: JSON.parse(data)});
-            }
-        }.bind(this);
-        xmlhttp.send();
-    },
-
     componentDidMount: function() {
         Layout.closeMenu();
-        this.intervalID = setInterval(this.loadServerData());
-    },
-
-    componentWillUnmount: function() {
-        clearInterval(this.intervalID)
     },
 
     render: function() {

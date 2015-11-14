@@ -88,12 +88,12 @@ func (r *Redis) GetUser(key string) domain.User {
 	return user
 }
 
-func (r *Redis) ListUsers() []domain.User {
+func (r *Redis) ListUsers() []domain.Member {
 	keys := r.UserInfoClient.Keys("*").Val()
-	userList := []domain.User{}
+	userList := []domain.Member{}
 
 	for _, value := range keys {
-		user := domain.User{}
+		user := domain.Member{}
 		json.Unmarshal([]byte(r.get(value, r.UserInfoClient)), &user)
 		userList = append(userList, user)
 	}

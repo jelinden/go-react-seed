@@ -9,15 +9,28 @@ const Admin = "admin"
 const Normal = "normal"
 
 type Data struct {
-	Users []User
-	User  User
+	Users []Member
+	User  Member
 	Err   string
 }
+
 type User struct {
 	Id                      string
 	Email                   string
 	Username                string
 	Password                string
+	Role                    Role
+	EmailVerified           bool
+	EmailVerificationString string
+	EmailVerifiedDate       time.Time
+	CreateDate              time.Time
+	ModifyDate              time.Time
+}
+
+type Member struct {
+	Id                      string
+	Email                   string
+	Username                string
 	Role                    Role
 	EmailVerified           bool
 	EmailVerificationString string

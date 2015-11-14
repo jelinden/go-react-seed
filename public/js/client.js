@@ -21,7 +21,10 @@ if (typeof selfjs !== 'undefined') {
                 }
             }
 
-            var reactContainer = ReactDOMServer.renderToString(<RoutingContext {...routerProps}/>)
+            var reactContainer = ReactDOMServer.renderToString(
+                <DataWrapper data={data}>
+                    <RoutingContext {...routerProps}/>
+                </DataWrapper>);
             res.write(ReactDOMServer.renderToStaticMarkup(
                 <Html>
                     <div id='react-container' dangerouslySetInnerHTML={{__html: reactContainer}}>
@@ -33,12 +36,27 @@ if (typeof selfjs !== 'undefined') {
 }
 
 if (typeof window !== 'undefined') {
-    function render() {
+    function renderWithData(data) {
         let history = createBrowserHistory();
-        ReactDOM.render(<Router history={history}>{routes}</Router>, document.getElementById('react-container'));
+        ReactDOM.render(
+            <DataWrapper data={data}>
+                <Router history={history}>{routes}</Router>
+            </DataWrapper>, document.getElementById('react-container'));
+    }
+
+    function loadServerData(callback) {
+        var xmlhttp = new XMLHttpRequest();
+        xmlhttp.open("GET", "/api/users", true);
+        xmlhttp.onreadystatechange = function() {
+            if (xmlhttp.readyState == 4 && (xmlhttp.status == 200 || xmlhttp.status == 403)) {
+                var data = xmlhttp.responseText;
+                callback(JSON.parse(data));
+            }
+        }
+        xmlhttp.send();
     }
 
     window.onload = function() {
-        render();
+        loadServerData(renderWithData);
     }
 }

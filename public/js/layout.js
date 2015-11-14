@@ -5,6 +5,10 @@ var Router = ReactRouter.Router;
 var Link = ReactRouter.Link;
 
 var Layout = React.createClass({
+    contextTypes: {
+        data: React.PropTypes.any
+    },
+
     statics: {
         toggleHorizontal: function() {
             [].forEach.call(
@@ -51,6 +55,18 @@ var Layout = React.createClass({
     },
 
     render () {
+        var menuLoggedIn;
+        if (this.context.data !== undefined && this.context.data.User !== undefined) {
+            menuLoggedIn = <ul className="pure-menu-list">
+                    <li className="pure-menu-item"><div className="pure-menu-link">{this.context.data.User.Username}</div></li>
+                    <li className="pure-menu-item"><a href="/logout" className="pure-menu-link">Logout</a></li>
+                </ul>;
+        } else {
+            menuLoggedIn = <ul className="pure-menu-list">
+                    <li className="pure-menu-item"><Link to="/register" className="pure-menu-link">Register</Link></li>
+                    <li className="pure-menu-item"><Link to="/login" className="pure-menu-link">Login</Link></li>
+                </ul>;
+        }
         return (
             <div>
                 <div className="custom-wrapper pure-g" id="menu">
@@ -69,18 +85,16 @@ var Layout = React.createClass({
                     </div>
                     <div className="pure-u-1 pure-u-md-1-3">
                         <div className="pure-menu pure-menu-horizontal custom-menu-3 custom-can-transform">
-                            <ul className="pure-menu-list">
-                                <li className="pure-menu-item"><Link to="/register" className="pure-menu-link">Register</Link></li>
-                                <li className="pure-menu-item"><Link to="/login" className="pure-menu-link">Login</Link></li>
-                                <li className="pure-menu-item"><a href="/logout" className="pure-menu-link">Logout</a></li>
-                            </ul>
+                            {menuLoggedIn}
                         </div>
                     </div>
                 </div>
 
                 <div className="main">
                     <h1>go react template</h1>
-                    {this.props.children}
+                    {React.cloneElement(this.props.children, {
+                        data: this.context.data
+                    })}
                 </div>
             </div>
         );

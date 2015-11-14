@@ -122,12 +122,15 @@ func (a *Application) listUsersAPI(c *echo.Context) error {
 		fmt.Println("cookie was empty", err)
 	} else {
 		session := a.Redis.GetSession(loginCookie.Value)
-		sUser := domain.User{}
+		sUser := domain.Member{}
 		json.Unmarshal([]byte(session), &sUser)
+		data := domain.Data{}
 
 		if sUser.Role.Name == "admin" {
-			return c.JSON(http.StatusOK, a.getUsersData())
+			data = a.getUsersData()
 		}
+		data.User = sUser
+		return c.JSON(http.StatusOK, data)
 	}
 	var m = make(map[string]string)
 	m["Err"] = "You are not logged in or the stars don't shine for you."
