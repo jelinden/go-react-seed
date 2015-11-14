@@ -91,7 +91,7 @@ var Layout = React.createClass({
                 </div>
 
                 <div className="main">
-                    <h1>go react template</h1>
+                    <h1>go react template project</h1>
                     {React.cloneElement(this.props.children, {
                         data: this.context.data
                     })}

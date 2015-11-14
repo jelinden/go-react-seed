@@ -10,8 +10,8 @@ var Index = React.createClass({
     render() {
         return (
             <div>
-                <h2>Home page</h2>
-                <div>First page</div>
+                <div>This is a seed project with universal Reactjs and Go backend.
+                Registering and logging in are supported. Email verification is sent, but not enforced yet.</div>
             </div>
         );
     }
