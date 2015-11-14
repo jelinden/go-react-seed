@@ -54,7 +54,7 @@ var UserList = React.createClass({
                         <td>{item.Username}</td>
                         <td>{item.Email}</td>
                         <td>{item.Role.Name}</td>
-                        <td>{item.EmailVerified}</td>
+                        <td>{item.EmailVerified?'true':'false'}</td>
                         <td><DateFormat data={item.CreateDate}/></td>
                     </tr>
                 ); 
