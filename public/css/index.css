@@ -16,22 +16,30 @@ input {
 h1 {
     font-weight: 100;
     text-transform: uppercase;
-    font-size: 38px;
+    font-size: 28px;
+}
+
+ul {
+    display: block;
 }
 
 h2 {
   font-size: 1.5em;
 }
+
 .pure-menu-link:hover,.pure-menu-link:focus{background-color:#777}
 a {
     text-decoration: none;
     color: #fff;
-    display: inline-block;
     padding-left: 10px;
 }
 
 .pure-menu-link {
     color: #fff;
+}
+
+.pure-menu-item {
+    height:auto !important;
 }
 
 .pubDate {
@@ -53,7 +61,7 @@ a {
 /* vertical menu */
 .custom-wrapper {
     background-color: black;
-    margin-bottom: 0.5em;
+    margin-bottom: 1em;
     -webkit-font-smoothing: antialiased;
     height: 2.1em;
     overflow: hidden;
@@ -64,7 +72,7 @@ a {
 }
 
 .custom-wrapper.open {
-    height: 22em;
+    height: 10em;
 }
 
 .custom-menu-3 {
@@ -88,7 +96,7 @@ a {
     height: 2px;
     border-radius: 100px;
     position: absolute;
-    top: 16px;
+    top: 18px;
     right: 7px;
     -webkit-transition: all 0.5s;
     -moz-transition: all 0.5s;
